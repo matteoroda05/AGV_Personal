@@ -9,7 +9,7 @@ try:
         s.connect((HOST, PORT))
         print("Connected to C++ server.\n")
         
-        messaggio = "Hello World! \n From Python Client."
+        messaggio = "Hello World! \n From Python Client.\n"
         s.sendall(messaggio.encode()) # Send message encoded with default ?utf-8?
         print("Messaggio inviato.\n")
         
