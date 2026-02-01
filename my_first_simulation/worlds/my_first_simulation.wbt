@@ -1,16 +1,50 @@
 #VRML_SIM R2025a utf8
+
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/drinks/protos/BeerBottle.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/factory/containers/protos/WoodenBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+
 WorldInfo {
+  basicTimeStep 8
 }
 Viewpoint {
-  orientation -0.5773 0.5773 0.5773 2.0944
-  position 0 0 10
+  orientation -0.17519745891700597 0.09264442831325079 0.9801647107968818 2.18521465027031
+  position 1.1378993363161864 -1.7028266230275677 0.6707710724607303
 }
 TexturedBackground {
+  texture "twilight_cloudy_empty"
 }
 TexturedBackgroundLight {
 }
 RectangleArena {
+  rotation 0 0 1 0.797865
+  floorTileSize 0.25 0.25
+  wallHeight 0.05
+}
+E-puck {
+  translation -0.0853314 -0.256065 -1.58e-15
+  rotation 0 0 1 0.332444
+  controller "epuck_go_forward"
+}
+WoodenBox {
+  translation 0.232724 0.185615 0.05
+  size 0.1 0.1 0.1
+}
+BeerBottle {
+  translation 0.0874307 -0.215671 -2.2535e-15
+  mass 0.04
+}
+BeerBottle {
+  translation -0.110207 0.355238 -7.04528e-15
+  rotation 0 0.7071067811865475 0.7071067811865475 0.5
+  name "beer bottle(1)"
+}
+BeerBottle {
+  translation -0.129203 0.165913 -5.42811e-15
+  rotation 0 0.7071067811865475 0.7071067811865475 0.5
+  name "beer bottle(2)"
+  mass 4
 }
