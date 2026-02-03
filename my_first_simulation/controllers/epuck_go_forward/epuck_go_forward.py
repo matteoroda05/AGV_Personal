@@ -13,6 +13,10 @@ timestep = int(robot.getBasicTimeStep())
 
 MAX_SPEED = 6.28
 
+# setup sensor
+ds = robot.getDevice('TestSensor1')
+ds.enable(timestep)
+
 # You should insert a getDevice-like function in order to get the
 # instance of a device of the robot. Something like:
 #  motor = robot.getDevice('motorname')
@@ -31,7 +35,8 @@ rMotor.setPosition(float('inf'))
 while robot.step(timestep) != -1:
     # Read the sensors:
     # Enter here functions to read sensor data, like:
-    #  val = ds.getValue()
+    val = ds.getValue()
+    print(f"Distance: {val}")
     
     # set up the motor speeds at 50% of the MAX_SPEED
     # after first 5s set rMotor speed to 1% => robot starts turning right with nonnull internal wheel speed
