@@ -6,6 +6,6 @@ minimizedPerspectives: 000000ff00000000fd0000000300000000000001ca0000039ffc02000
 maximizedDockId: -1
 centralWidgetVisible: 1
 orthographicViewHeight: 1
-textFiles: 0 "controllers/epuck_go_forward/epuck_go_forward.py"
+textFiles: 0 "../../AGV_Personal/my_first_simulation/controllers/epuck_go_forward/epuck_go_forward.py"
 consoles: Console:All:All
 renderingDevicePerspectives: e-puck:camera;1;1;0;0
