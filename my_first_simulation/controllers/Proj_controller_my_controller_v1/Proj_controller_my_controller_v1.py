@@ -52,14 +52,14 @@ def acc_speed(target_speed, current_speed, delta_time, time_to_target):
 # create the Robot instance
 robot = Robot()
 # get the time step of the current world
-timestep = int(robot.getBasicTimeStep()) #(ms) currently timestep is 1ms
+timestep = int(robot.getBasicTimeStep()) #(ms) currently timestep is 10ms
 # Get motor devices
 motorL = robot.getDevice('left wheel motor')
 motorR = robot.getDevice('right wheel motor')
 
 # Setup distance sensor 
 ds1 = robot.getDevice('TestSensor1')
-# enable distance sensor with in order to have a good precision
+# enable distance sensor in order to have a good precision
 ds1.enable(timestep)
 
 
@@ -80,8 +80,9 @@ while robot.step(timestep) != -1:
     # Read and print the sensor value every 1 second 
     current_time = robot.getTime()
     dist = ds1.getValue()
+    print(f"The distance mesured by the distance sensor 1 at time {current_time}s is: {dist}")
     if current_time - last_print_time >= 0.5:
-        print(f"The distance mesured by the distance sensor 1 at time {current_time}s is: {dist}")
+        # print(f"The distance mesured by the distance sensor 1 at time {current_time}s is: {dist}")
         last_print_time = current_time
         # Get wheel speed and print it
         w_r = motorR.getVelocity()
@@ -91,8 +92,8 @@ while robot.step(timestep) != -1:
     # set_wheel_velocity(0.1, 0)
 
     # Simple obstacle avoidance with deceleration and acceleration
-    if dist < 750:
-        set_wheel_velocity(0.1, -5)
+    if dist < 800:
+        set_wheel_velocity(0.1, 5)
         time_to_target = 0.0
     elif dist < 1000: 
         current_speed = get_current_linear_speed()
