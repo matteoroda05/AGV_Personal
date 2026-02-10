@@ -71,7 +71,7 @@ motorR.setPosition(float('inf'))
 last_print_time = 0.0
 
 # Variables for acceleration
-OBSTACLE_DECELERATION_TIME = 1 #(s)
+OBSTACLE_DECELERATION_TIME = 1.5 #(s)
 time_to_target = 0.0
 
 # Main loop:
@@ -93,22 +93,22 @@ while robot.step(timestep) != -1:
 
     # Simple obstacle avoidance with deceleration and acceleration
     if dist < 800:
-        set_wheel_velocity(0.1, 5)
+        set_wheel_velocity(0.3, 5)
         time_to_target = 0.0
     elif dist < 1000: 
         current_speed = get_current_linear_speed()
         time_to_target += 0.010
-        new_speed = acc_speed(0.1, current_speed, OBSTACLE_DECELERATION_TIME, time_to_target)
+        new_speed = acc_speed(0.3, current_speed, OBSTACLE_DECELERATION_TIME, time_to_target)
         set_wheel_velocity(new_speed, 0)
     else:
         current_speed = get_current_linear_speed()
-        if current_speed < 0.1:
+        if current_speed < 0.5:
             time_to_target += 0.010
-            new_speed = acc_speed(0.1, current_speed, OBSTACLE_DECELERATION_TIME, time_to_target)
+            new_speed = acc_speed(0.5, current_speed, OBSTACLE_DECELERATION_TIME, time_to_target)
             set_wheel_velocity(new_speed, 0)
         else:
             time_to_target = 0.0
-            set_wheel_velocity(0.1, 0)
+            set_wheel_velocity(0.5, 0)
 
     pass
 

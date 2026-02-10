@@ -27,6 +27,7 @@ DEF E_PUCK Robot {
   translation -1.12486 -0.0216533 3.99861e-15
   children [
     DistanceSensor {
+      translation 0.035 0 0.03
       name "TestSensor1"
       lookupTable [
         0 0 0
@@ -1602,7 +1603,7 @@ DEF E_PUCK Robot {
   }
   physics Physics {
     density -1
-    mass 1
+    mass 0.5
     centerOfMass [
       0 0 0.015
     ]
