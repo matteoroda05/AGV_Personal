@@ -58,9 +58,15 @@ motorL = robot.getDevice('left wheel motor')
 motorR = robot.getDevice('right wheel motor')
 
 # Setup distance sensor 
-ds1 = robot.getDevice('TestSensor1')
+ds1 = robot.getDevice('Distance1')
 # enable distance sensor in order to have a good precision
 ds1.enable(timestep)
+
+# Setup lidar sensor
+ls1 = robot.getDevice('Lidar1')
+ls1.enable(timestep)
+ls1.enablePointCloud()
+print(ls1.getFov())
 
 
 # Set the motors to rotate indefinitely for velocity control
@@ -80,9 +86,12 @@ while robot.step(timestep) != -1:
     # Read and print the sensor value every 1 second 
     current_time = robot.getTime()
     dist = ds1.getValue()
-    print(f"The distance mesured by the distance sensor 1 at time {current_time}s is: {dist}")
+    lidar = ls1.getNumberOfPoints()
+    # print(f"The distance mesured by the distance sensor 1 at time {current_time}s is: {dist}")
+    # print(f"The lidar mesured by the lidar sensor 1 at time {current_time}s is: {lidar}")
     if current_time - last_print_time >= 0.5:
-        # print(f"The distance mesured by the distance sensor 1 at time {current_time}s is: {dist}")
+        print(f"The distance mesured by the distance sensor 1 at time {current_time}s is: {dist}")
+        print(f"The points mesured by the lidar sensor 1 at time {current_time}s is: {lidar}")
         last_print_time = current_time
         # Get wheel speed and print it
         w_r = motorR.getVelocity()
