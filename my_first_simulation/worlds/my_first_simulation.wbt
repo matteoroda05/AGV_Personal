@@ -5,13 +5,17 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/drinks/protos/BeerBottle.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/factory/containers/protos/WoodenBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/animals/protos/Cat.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/toys/protos/RubberDuck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/balls/protos/FifaSoccerBall.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/kitchen/breakfast/protos/CerealBox.proto"
 
 WorldInfo {
   basicTimeStep 10
 }
 Viewpoint {
-  orientation 0.08095898546595033 -0.9750254555928737 -0.20681151713150073 5.51960546580403
-  position -4.39268101378104 -1.0273583613689339 3.9597683339855143
+  orientation 0.19969310936429793 -0.8526351871105704 -0.48284148514118047 5.379937022190775
+  position -5.121296961733309 -2.75178921864521 5.396773029752631
 }
 TexturedBackground {
   texture "twilight_cloudy_empty"
@@ -19,20 +23,21 @@ TexturedBackground {
 TexturedBackgroundLight {
 }
 RectangleArena {
+  translation -0.0334545 -0.00375956 -1.56489e-16
   rotation 0 0 1 0.797865
   floorSize 2 2
   floorTileSize 1 1
 }
 DEF E_PUCK Robot {
-  translation -1.12486 -0.0216533 3.99861e-15
+  translation -1.38941 -0.0219457 -4.54363e-14
+  rotation 0 0 1 4.692820414042842e-06
   children [
     Lidar {
       translation 0 0 0.05
       name "Lidar1"
-      fieldOfView 2.617
       horizontalResolution 360
-      minRange 0.01
-      maxRange 2.0
+      fieldOfView 3.15
+      maxRange 2
     }
     DistanceSensor {
       translation 0.025 0 0.03
@@ -1642,4 +1647,23 @@ BeerBottle {
   rotation 0 0.7071067811865475 0.7071067811865475 0.5
   name "beer bottle(2)"
   mass 4
+}
+Cat {
+  translation -0.261135 -0.866917 1.20416e-14
+  rotation 0 0 -1 -1.3089953071795861
+}
+RubberDuck {
+  translation 0.431335 -0.36312 0.333136
+  rotation 1 0 0 -0.785395307179586
+  scale 2
+  density 0.1
+}
+CerealBox {
+  translation 0.31669 0.574114 0.44
+  rotation -0.25056306820553154 0.25056206820525934 0.9351132545462786 1.63784
+  mass 12
+}
+FifaSoccerBall {
+  translation -0.286387 0.484181 1.48
+  size 3
 }

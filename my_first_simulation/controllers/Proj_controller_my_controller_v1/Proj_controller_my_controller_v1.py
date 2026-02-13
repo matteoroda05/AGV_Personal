@@ -86,14 +86,15 @@ left_min = 0
 
 
 # Variables for printing the sensor value every 1 second 
-last_print_time = 0.0
+last_print_time = -0.6
 
 # Speed constants
 CRUISE_SPEED = 0.4 #(m/s)
-TRUN_SPEED = 0.2 #(m/s)
+TRUN_SPEED = 0.35 #(m/s)
+HARD_TRUN_SPEED = 0.2 #(m/s)
 
 # Variables for acceleration
-OBSTACLE_DECELERATION_TIME = 1.5 #(s)
+OBSTACLE_DECELERATION_TIME = 1 #(s)
 time_to_target = 0.0
 
 # Main loop:
@@ -127,16 +128,28 @@ while robot.step(timestep) != -1:
         print(f"Wheel speeds: L: {w_l}, R: {w_r}")
         # Update last print time
         last_print_time = current_time
-        
-    # Simple obstacle avoidance with deceleration and acceleration from distance sensor
-    if dist < 600:
-        set_wheel_velocity(TRUN_SPEED, 5)
+
+    # Lidar obstacle avoidance
+    # Close object in front > turn
+    if center_min < 0.2:
+        if right_min > left_min:
+            set_wheel_velocity(HARD_TRUN_SPEED, -7.5) #turn left
+        else:
+            set_wheel_velocity(HARD_TRUN_SPEED, 7.5) #turn right
         time_to_target = 0.0
-    elif dist < 700: 
+    # Object in front > slow down 
+    elif center_min < 0.35:
         current_speed = get_current_linear_speed()
-        time_to_target += 0.005 #slower deceleration vs acc.
-        new_speed = acc_speed(TRUN_SPEED, current_speed, OBSTACLE_DECELERATION_TIME, time_to_target)
+        time_to_target += 0.005
+        new_speed = acc_speed(HARD_TRUN_SPEED, current_speed, OBSTACLE_DECELERATION_TIME, time_to_target)
         set_wheel_velocity(new_speed, 0)
+    # Object on the right 
+    elif right_min < 0.15 and right_min < left_min:
+        set_wheel_velocity(TRUN_SPEED, -3) #small turn left
+    # Object on the left
+    elif left_min < 0.15 and left_min < right_min:
+        set_wheel_velocity(TRUN_SPEED, 3) #small turn right
+    # No obstacle (+ acceleration)
     else:
         current_speed = get_current_linear_speed()
         if current_speed < CRUISE_SPEED:
@@ -146,12 +159,28 @@ while robot.step(timestep) != -1:
         else:
             time_to_target = 0.0
             set_wheel_velocity(CRUISE_SPEED, 0)
+        
 
     pass
 
 # Enter here exit cleanup code.
 
 
-
-
-
+    # # Simple obstacle avoidance with deceleration and acceleration from distance sensor
+    # if dist < 600:
+    #     set_wheel_velocity(TRUN_SPEED, 5) #only turns left
+    #     time_to_target = 0.0
+    # elif dist < 700: 
+    #     current_speed = get_current_linear_speed()
+    #     time_to_target += 0.005 #slower deceleration vs acc.
+    #     new_speed = acc_speed(TRUN_SPEED, current_speed, OBSTACLE_DECELERATION_TIME, time_to_target)
+    #     set_wheel_velocity(new_speed, 0)
+    # else:
+    #     current_speed = get_current_linear_speed()
+    #     if current_speed < CRUISE_SPEED:
+    #         time_to_target += 0.01 #faster acceleration vs dec.
+    #         new_speed = acc_speed(CRUISE_SPEED, current_speed, OBSTACLE_DECELERATION_TIME, time_to_target)
+    #         set_wheel_velocity(new_speed, 0)
+    #     else:
+    #         time_to_target = 0.0
+    #         set_wheel_velocity(CRUISE_SPEED, 0)
