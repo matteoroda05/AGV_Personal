@@ -14,7 +14,7 @@ timestep = int(robot.getBasicTimeStep())
 MAX_SPEED = 6.28
 
 # setup sensor
-ds = robot.getDevice('TestSensor1')
+ds = robot.getDevice('Distance1')
 ds.enable(timestep)
 
 # You should insert a getDevice-like function in order to get the

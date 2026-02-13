@@ -1,7 +1,7 @@
 """my_controller controller."""
 
 from controller import Robot 
-#Error due to library used by webots and not imported locally
+#Error due to library used by webots and not imported locally (webots uses it)
 import numpy as np 
 import time
 
@@ -62,62 +62,90 @@ ds1 = robot.getDevice('Distance1')
 # enable distance sensor in order to have a good precision
 ds1.enable(timestep)
 
-# Setup lidar sensor
-ls1 = robot.getDevice('Lidar1')
-ls1.enable(timestep)
-ls1.enablePointCloud()
-print(ls1.getFov())
-
-
 # Set the motors to rotate indefinitely for velocity control
 motorL.setPosition(float('inf'))
 motorR.setPosition(float('inf'))
 
+# Setup lidar sensor
+ls1 = robot.getDevice('Lidar1')
+ls1.enable(timestep)
+# Get and print lidar constraints
+lidar_fov = ls1.getFov()
+lidar_width = ls1.getHorizontalResolution()
+lidar_max_range = ls1.getMaxRange()
+print(f"Lidar FOV: {lidar_fov} radians ({lidar_fov*180/np.pi} degrees), horizontal resolution: {lidar_width} points, max range: {lidar_max_range}m")
+sector_size = lidar_width // 3
+raw_range_image = []
+clean_range_image = []
+right_sector = []
+center_sector = []
+left_sector = []
+right_min = 0
+center_min = 0
+left_min = 0
+
+
 # Variables for printing the sensor value every 1 second 
 last_print_time = 0.0
+
+# Speed constants
+CRUISE_SPEED = 0.4 #(m/s)
+TRUN_SPEED = 0.2 #(m/s)
 
 # Variables for acceleration
 OBSTACLE_DECELERATION_TIME = 1.5 #(s)
 time_to_target = 0.0
 
 # Main loop:
-# - perform simulation steps until Webots is stopping the controller
+# > perform simulation steps until Webots is stopping the controller
 while robot.step(timestep) != -1:
-    # Read and print the sensor value every 1 second 
-    current_time = robot.getTime()
+    # Read distance sensor value
     dist = ds1.getValue()
-    lidar = ls1.getNumberOfPoints()
-    # print(f"The distance mesured by the distance sensor 1 at time {current_time}s is: {dist}")
-    # print(f"The lidar mesured by the lidar sensor 1 at time {current_time}s is: {lidar}")
+
+    # Read lidar values
+    raw_range_image = ls1.getRangeImage() # List of SP floats what describe the range
+    clean_range_image = [x if x != float('inf') else lidar_max_range for x in raw_range_image] # Remove inf values
+    # Split the list in three sectors (right, center, left) and get minimum of each secor
+    left_sector = np.array(clean_range_image[0 : sector_size])
+    center_sector = np.array(clean_range_image[sector_size : 2*sector_size])
+    right_sector = np.array(clean_range_image[2*sector_size : 3*sector_size])
+    left_min = np.min(left_sector)
+    center_min = np.min(center_sector)
+    right_min = np.min(right_sector)
+
+
+    # Print the sensors value and motor speed every 0.5 second 
+    current_time = robot.getTime()
     if current_time - last_print_time >= 0.5:
-        print(f"The distance mesured by the distance sensor 1 at time {current_time}s is: {dist}")
-        print(f"The points mesured by the lidar sensor 1 at time {current_time}s is: {lidar}")
-        last_print_time = current_time
+        # Print distance sensor value
+        print(f"The distance mesured by the distance sensor 1 at time {current_time}s is: {dist}mm")
+        # Print lidar values
+        print(f"Lidar values: L: {left_min}, C: {center_min}, R: {right_min}")
         # Get wheel speed and print it
         w_r = motorR.getVelocity()
         w_l = motorL.getVelocity()
         print(f"Wheel speeds: L: {w_l}, R: {w_r}")
-
-    # set_wheel_velocity(0.1, 0)
-
-    # Simple obstacle avoidance with deceleration and acceleration
-    if dist < 800:
-        set_wheel_velocity(0.3, 5)
+        # Update last print time
+        last_print_time = current_time
+        
+    # Simple obstacle avoidance with deceleration and acceleration from distance sensor
+    if dist < 600:
+        set_wheel_velocity(TRUN_SPEED, 5)
         time_to_target = 0.0
-    elif dist < 1000: 
+    elif dist < 700: 
         current_speed = get_current_linear_speed()
-        time_to_target += 0.010
-        new_speed = acc_speed(0.3, current_speed, OBSTACLE_DECELERATION_TIME, time_to_target)
+        time_to_target += 0.005 #slower deceleration vs acc.
+        new_speed = acc_speed(TRUN_SPEED, current_speed, OBSTACLE_DECELERATION_TIME, time_to_target)
         set_wheel_velocity(new_speed, 0)
     else:
         current_speed = get_current_linear_speed()
-        if current_speed < 0.5:
-            time_to_target += 0.010
-            new_speed = acc_speed(0.5, current_speed, OBSTACLE_DECELERATION_TIME, time_to_target)
+        if current_speed < CRUISE_SPEED:
+            time_to_target += 0.01 #faster acceleration vs dec.
+            new_speed = acc_speed(CRUISE_SPEED, current_speed, OBSTACLE_DECELERATION_TIME, time_to_target)
             set_wheel_velocity(new_speed, 0)
         else:
             time_to_target = 0.0
-            set_wheel_velocity(0.5, 0)
+            set_wheel_velocity(CRUISE_SPEED, 0)
 
     pass
 
