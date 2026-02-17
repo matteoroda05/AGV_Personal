@@ -3,10 +3,10 @@ Personal repository of trials and tests for the Devnut X PMDS AGV project
 
 ## Summary of files added/edited recently
 Reverse chronological order of last update
-- Folder: my_first_simulation (13 Feb 2025)
-    - File: Proj_controller_my_controller_v1.py (13 Feb 2025)
-        - Added a controller that is pretty much the exact same as the one we use in the official project for me to experiment on this world. The controller makes the robot go forward until it detects an obstacle with the distance sensor, then it stops and turns left with decreased linear speed (from 0.4 m/s to 0.2 m/s) at a angular speed of 5 rad/s until the recorded distance becomes higher than a set value (600 ~~ 60cm). The deceleration starts a tad earlier than the turn (700 ~~ 70cm) where the robot starts decelrating at a constant acceleration for a set time (OBSTACLE_DECELERATION_TIME), the same time is then "used" for the robot to accelerate back to cruise speed after the turn has been made until cruise speed is reached.
+- Folder: my_first_simulation (20 Feb 2025)
+    - File: Proj_controller_my_controller_v1.py (20 Feb 2025)
         - Added a lidar sensor to the robot with no use atm other than printing some information it records. Better obstacle avoidance implemented thanks to the lidar which has a much greater FOV (field of view–currently set at ~180 degrees) than the distance sensor, as well as an array of distances to represent the sorrounding space.
+        - Added a controller that is pretty much the exact same as the one we use in the official project for me to experiment on this world. The controller makes the robot go forward until it detects an obstacle with the distance sensor, then it stops and turns left with decreased linear speed (from 0.4 m/s to 0.2 m/s) at a angular speed of 5 rad/s until the recorded distance becomes higher than a set value (600 ~~ 60cm). The deceleration starts a tad earlier than the turn (700 ~~ 70cm) where the robot starts decelrating at a constant acceleration for a set time (OBSTACLE_DECELERATION_TIME), the same time is then "used" for the robot to accelerate back to cruise speed after the turn has been made until cruise speed is reached.
     - File: my_first_simulation.wbt (13 Feb 2025)
         - Changed devices (sensor and robots) charateristics to better fit the project's requirements and the logic implemented in the controller.
         - Added simple world following tutorial 1 (https://cyberbotics.com/doc/guide/tutorial-1-your-first-simulation-in-webots?tab-language=python) in python (since it's the language we will use for the project) and added/modified some bits from the base tutorial to better familiarize myself with webots. Specifically: 

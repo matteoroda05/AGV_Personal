@@ -130,6 +130,10 @@ while robot.step(timestep) != -1:
         last_print_time = current_time
 
     # Lidar obstacle avoidance
+    # In a dead end > reverse
+    if center_min < 0.1 and right_min < 0.05 and left_min < 0.05:
+        set_wheel_velocity(0, 10)
+        time_to_target = 0.0
     # Close object in front > turn
     if center_min < 0.2:
         if right_min > left_min:
