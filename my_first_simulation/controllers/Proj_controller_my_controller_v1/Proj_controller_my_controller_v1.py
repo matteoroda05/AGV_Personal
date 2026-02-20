@@ -142,6 +142,7 @@ while robot.step(timestep) != -1:
         last_print_time = current_time
 
     if gps_values[0] > 0.45 and gps_values[1] > 0.45 and gps_values[0] < 0.55 and gps_values[1] < 0.55:
+        print(gps_values[0], gps_values[1])
         print("Target reached!")
         set_wheel_velocity(0, 0)
         break
