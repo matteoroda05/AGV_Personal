@@ -1,6 +1,8 @@
 """my_controller controller."""
 
-from controller import Robot 
+from controller import Robot
+from controller import LidarPoint
+from controller import GPS
 #Error due to library used by webots and not imported locally (webots uses it)
 import numpy as np 
 import time
@@ -49,18 +51,21 @@ def acc_speed(target_speed, current_speed, delta_time, time_to_target):
         delta_vel = (target_speed - current_speed) / delta_time
     return current_speed + delta_vel*time_to_target
 
-# create the Robot instance
+# Define coordinates of the target point for the robot to go to
+def go_to_point(x, y):
+    # Get GPS values
+    gps_values = gps.getValues()
+    # Calculate the angle to the target point
+    angle = np.arctan2(y - gps_values[1], x - gps_values[0])
+    return angle
+
+# Create the Robot instance
 robot = Robot()
-# get the time step of the current world
+# Get the time step of the current world
 timestep = int(robot.getBasicTimeStep()) #(ms) currently timestep is 10ms
 # Get motor devices
 motorL = robot.getDevice('left wheel motor')
 motorR = robot.getDevice('right wheel motor')
-
-# Setup distance sensor 
-ds1 = robot.getDevice('Distance1')
-# enable distance sensor in order to have a good precision
-ds1.enable(timestep)
 
 # Set the motors to rotate indefinitely for velocity control
 motorL.setPosition(float('inf'))
@@ -84,9 +89,15 @@ right_min = 0
 center_min = 0
 left_min = 0
 
+# Setup GPS sensor
+gps = robot.getDevice('gps')
+gps.enable(timestep)
+print(f"GPS Coordinate System: {gps.getCoordinateSystem()}")
+
+
 
 # Variables for printing the sensor value every 1 second 
-last_print_time = -0.6
+last_print_time = -0.51
 
 # Speed constants
 CRUISE_SPEED = 0.4 #(m/s)
@@ -100,9 +111,6 @@ time_to_target = 0.0
 # Main loop:
 # > perform simulation steps until Webots is stopping the controller
 while robot.step(timestep) != -1:
-    # Read distance sensor value
-    dist = ds1.getValue()
-
     # Read lidar values
     raw_range_image = ls1.getRangeImage() # List of SP floats what describe the range
     clean_range_image = [x if x != float('inf') else lidar_max_range for x in raw_range_image] # Remove inf values
@@ -114,14 +122,18 @@ while robot.step(timestep) != -1:
     center_min = np.min(center_sector)
     right_min = np.min(right_sector)
 
+    # Get GPS values
+    gps_values = gps.getValues()
 
     # Print the sensors value and motor speed every 0.5 second 
     current_time = robot.getTime()
     if current_time - last_print_time >= 0.5:
-        # Print distance sensor value
-        print(f"The distance mesured by the distance sensor 1 at time {current_time}s is: {dist}mm")
+        # Print time
+        print(f"Time: {current_time}")
         # Print lidar values
         print(f"Lidar values: L: {left_min}, C: {center_min}, R: {right_min}")
+        # Print GPS values
+        print(f"GPS values: {gps_values}")
         # Get wheel speed and print it
         w_r = motorR.getVelocity()
         w_l = motorL.getVelocity()
@@ -129,13 +141,20 @@ while robot.step(timestep) != -1:
         # Update last print time
         last_print_time = current_time
 
+    if gps_values[0] > 0.45 and gps_values[1] > 0.45 and gps_values[0] < 0.55 and gps_values[1] < 0.55:
+        print("Target reached!")
+        set_wheel_velocity(0, 0)
+        break
+
+    angle = go_to_point(0.5, 0.5)
+
     # Lidar obstacle avoidance
     # In a dead end > reverse
     if center_min < 0.1 and right_min < 0.05 and left_min < 0.05:
         set_wheel_velocity(0, 10)
         time_to_target = 0.0
     # Close object in front > turn
-    if center_min < 0.2:
+    elif center_min < 0.2:
         if right_min > left_min:
             set_wheel_velocity(HARD_TRUN_SPEED, -7.5) #turn left
         else:
@@ -146,45 +165,29 @@ while robot.step(timestep) != -1:
         current_speed = get_current_linear_speed()
         time_to_target += 0.005
         new_speed = acc_speed(HARD_TRUN_SPEED, current_speed, OBSTACLE_DECELERATION_TIME, time_to_target)
-        set_wheel_velocity(new_speed, 0)
+        set_wheel_velocity(new_speed, angle)
     # Object on the right 
     elif right_min < 0.15 and right_min < left_min:
-        set_wheel_velocity(TRUN_SPEED, -3) #small turn left
+        if angle > 0:
+            angle = -3
+        set_wheel_velocity(TRUN_SPEED, angle) #small turn left
     # Object on the left
     elif left_min < 0.15 and left_min < right_min:
-        set_wheel_velocity(TRUN_SPEED, 3) #small turn right
+        if angle < 0:
+            angle = 3
+        set_wheel_velocity(TRUN_SPEED, angle) #small turn right
     # No obstacle (+ acceleration)
     else:
         current_speed = get_current_linear_speed()
         if current_speed < CRUISE_SPEED:
             time_to_target += 0.01 #faster acceleration vs dec.
             new_speed = acc_speed(CRUISE_SPEED, current_speed, OBSTACLE_DECELERATION_TIME, time_to_target)
-            set_wheel_velocity(new_speed, 0)
+            set_wheel_velocity(new_speed, angle)
         else:
             time_to_target = 0.0
-            set_wheel_velocity(CRUISE_SPEED, 0)
+            set_wheel_velocity(CRUISE_SPEED, angle)
         
 
     pass
 
 # Enter here exit cleanup code.
-
-
-    # # Simple obstacle avoidance with deceleration and acceleration from distance sensor
-    # if dist < 600:
-    #     set_wheel_velocity(TRUN_SPEED, 5) #only turns left
-    #     time_to_target = 0.0
-    # elif dist < 700: 
-    #     current_speed = get_current_linear_speed()
-    #     time_to_target += 0.005 #slower deceleration vs acc.
-    #     new_speed = acc_speed(TRUN_SPEED, current_speed, OBSTACLE_DECELERATION_TIME, time_to_target)
-    #     set_wheel_velocity(new_speed, 0)
-    # else:
-    #     current_speed = get_current_linear_speed()
-    #     if current_speed < CRUISE_SPEED:
-    #         time_to_target += 0.01 #faster acceleration vs dec.
-    #         new_speed = acc_speed(CRUISE_SPEED, current_speed, OBSTACLE_DECELERATION_TIME, time_to_target)
-    #         set_wheel_velocity(new_speed, 0)
-    #     else:
-    #         time_to_target = 0.0
-    #         set_wheel_velocity(CRUISE_SPEED, 0)

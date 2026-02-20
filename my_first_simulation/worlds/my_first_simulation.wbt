@@ -14,8 +14,8 @@ WorldInfo {
   basicTimeStep 10
 }
 Viewpoint {
-  orientation 0.19969310936429793 -0.8526351871105704 -0.48284148514118047 5.379937022190775
-  position -5.121296961733309 -2.75178921864521 5.396773029752631
+  orientation 0.28709038665773956 -0.7134727393078762 -0.639168021848109 5.159464540718333
+  position -2.105059875351556 -2.7921836034365963 3.8841111200826406
 }
 TexturedBackground {
   texture "twilight_cloudy_empty"
@@ -32,21 +32,14 @@ DEF E_PUCK Robot {
   translation -1.38941 -0.0219457 -4.54363e-14
   rotation 0 0 1 4.692820414042842e-06
   children [
+    GPS {
+    }
     Lidar {
       translation 0 0 0.05
       name "Lidar1"
       horizontalResolution 360
       fieldOfView 3.15
       maxRange 2
-    }
-    DistanceSensor {
-      translation 0.025 0 0.03
-      name "Distance1"
-      lookupTable [
-        0 0 0
-        1 1000 0
-      ]
-      aperture 1.67
     }
     HingeJoint {
       jointParameters HingeJointParameters {
