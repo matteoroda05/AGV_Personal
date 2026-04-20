@@ -1,5 +1,9 @@
 # AGV_Personal
+
+**This repository is currently stalled, because I am now working only in the official project repository, which is private, for the Devnut X PMDS AGV project.**
+
 Personal repository of trials and tests for the Devnut X PMDS AGV project 
+
 
 ## Summary of files added/edited recently
 Reverse chronological order of last update
